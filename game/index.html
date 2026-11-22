@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Midnight at the Meridian Vault — a heist game</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #070917; }
+  body { display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+  canvas { width: min(1280px, 100vw); height: auto; display: block; background: #0b0e22; }
+  #status { color: #94a3b8; font: 13px Verdana, sans-serif; padding: 8px 16px; text-align: center; }
+</style>
+</head>
+<body>
+<canvas id="game" width="1280" height="720" aria-label="Midnight at the Meridian Vault, a top-down heist game"></canvas>
+<div id="status" aria-live="polite"></div>
+<script type="module" src="./src/boot.js"></script>
+</body>
+</html>
