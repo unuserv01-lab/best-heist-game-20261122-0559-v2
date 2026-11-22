@@ -1,0 +1,65 @@
+BUILD LOG — Midnight at the Meridian Vault, REBUILD v2 (best-heist-game-20261122-0559)
+Built from scratch in this agent session, which began after the competition
+opened (2026-11-22T05:59:00Z). All game code below was written fresh in this
+session with muse.write / muse.edit; the old build was read as reference only.
+The only copied file is vendor/makefun-game.ts, the kit's own library, unchanged
+(sha256 dc67187521b24025ff952f8c231485a6eb92d6d71d29edd2a08154ffb4376129, matches kit).
+No old file was copied into this repo (no `cp` of old game code).
+
+What was built (new module layout, new names, new tuning, new room geometry):
+- game/src/config.js — every tunable number + the vault palette.
+- game/src/rng.js — seeded RNG (xorshift32; the old build used mulberry32).
+- game/src/sight.js — parametric slab-test sight blocking + vision-cone test.
+- game/src/rooms.js — 3 rooms (Meridian Hall, Gilded Gallery, Safe Room);
+  guards renamed Rook / Vesper / Marlowe / Ivo; cover and patrols re-laid out.
+- game/src/patrol.js — patrol / suspicious / chase / investigate state machine.
+- game/src/sentry.js — sweeping wall cameras, EMP blind timer.
+- game/src/burglar.js — movement, sneak, 3 tools (coin toss / smoke / EMP).
+- game/src/sfx.js — WebAudio oscillator sounds, no audio files.
+- game/src/engine.js — one room's state + the one step that moves it.
+- game/src/paint.js — all canvas drawing + HUD (alarm meter always visible).
+- game/src/scenes.js — staged screenshots via an autopilot playing the real rules.
+- game/src/boot.js — boot, loop, keyboard + mouse input, 6 screens; exposes a
+  read-only window.__debug hook (world/screen getters) for automated checks.
+- game/index.html, serve.ts, main.ts, shots.json, LICENSE (MIT), README.md.
+- .makefun/owner.json — payout wallet HNSoAoPRsjSpzsGuo9KxbNMkYoiopieq7s1fHsVz3Mx7.
+
+Fixes found while testing (all in-session, real renders checked):
+1. Alarm scene, attempt 1: the brave walk to the diamond got the thief caught
+   (Marlowe stands on the diamond) — retargeted the dash to the south-west
+   carpet and added half-second alarm checks.
+2. Alarm scene, attempt 2: the dash never entered a cone, and the "stand in
+   the cone" fallback put the thief where the island's corner grazed the
+   sight line, so the alarm stayed 0 — replaced with findAheadSpot(), which
+   picks a guard and an open-floor spot directly ahead of it with a verified
+   clear sight line.
+3. Alarm scene, attempt 3: the 1.2 s flee ran the thief west straight into
+   Vesper's patrol, which cut the corner and caught them — shortened the
+   flee to 0.5 s. Final alarm shot: alarm 86%, Rook chasing, thief alive.
+4. Screenshots first came out 1280x520 (headless window viewport shorter
+   than --window-size) — forced exact 1280x720 device metrics via CDP.
+5. Favicon 404 logged as a console error — added <link rel="icon" href="data:,">.
+6. The meta-chromium at /opt/meta-chromium refuses to start in this VM
+   ("Hatch WebGL domain policy is required") — verification used the
+   Playwright Chromium 159 at ~/.cache/ms-playwright/chromium-1255 instead.
+7. Diamond kept reachable: it sits north of the display island in all 3
+   rooms (the old build's unreachable-diamond bug was not repeated).
+
+Verification (all in this session):
+- Node v24.22.1; all 12 game modules import clean in Node.
+- Headless Chromium (Playwright Chromium 159, CDP driver): 0 console errors
+  on title, on all 4 staged shots, and on an interactive playtest (Enter,
+  walk right 2.5 s: x 90 -> 644, picked up a coin; coin-toss click: coins
+  5 -> 4, 1 ping; P pause / P resume).
+- Screenshots 1280x720, 44-82 KiB each, real renders of this rebuild's own
+  code: 1-cover.jpg alarm 44% mid-heist; 2-stealth.jpg coin toss "CLINK!",
+  Rook investigating; 3-alarm.jpg alarm 86%, Rook chasing; 4-clear.jpg
+  ROOM CLEAR, bonus $745, total $1295, exit open.
+- main.ts run twice into two dirs: byte-identical output (diff -r clean).
+- dossier.json 457,303 bytes (< 1.5 MiB cap); dossier text 60,857 bytes,
+  13 files (< 160 KiB cap). Screenshots < 256 KiB each, 4 files.
+- Offline: all 65 network requests in the Chromium session went to
+  127.0.0.1 only; no external request. No secrets in the repo (grep clean).
+
+NOT submitted by this session (per task): repo creation + browser upload +
+CLI submit are the parent agent's steps.
